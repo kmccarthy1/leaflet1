@@ -32,13 +32,52 @@
 
 <script>
     //map initialization
-    var map = L.map('map').setView([37.540, -77.43], 11);
+    var map = L.map('map').setView([37.540, -77.43], 14);
     //adding osm layer
     var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         });
-        osm.addTo(map);
+        //osm.addTo(map);
+
+        var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+        });
+        carto.addTo(map);
+
+        var dark = L.tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+            attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            minZoom: 0,
+            maxZoom: 22,
+            subdomains: 'abcd',
+            accessToken: '<your accessToken>'
+        });
+        //dark.addTo(map);
+        var myIcon = L.icon ({
+            iconUrl: 'img/bike.png',
+            iconSize: [45,45],
+        });
+
+        var marker3 = L.marker([37.536, -77.42], {icon: myIcon});
+        var popup = marker3.bindPopup('This is Richmond!').openPopup()
+        popup.addTo(map);
+
+        //basemap controller
+        var baseMaps = {
+            "OSM":osm,
+            "Carto": carto
+        };
+        var overlayMaps = {
+            "Richmond City" : marker3 
+        };
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+
+
+
 
     </script>
 
