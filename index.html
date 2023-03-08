@@ -17,13 +17,19 @@
             width: 100%;
             height: 100vh;
         }
+
+        .coordinate {
+            position: absolute;
+            bottom: 10px;
+            right: 80%
+        }
     </style>
 
 
 </head>
 <body>
 <div id="map"></div>
-
+    <div class="leaflet-control coordinate" ></div>
 </body>
 
 
@@ -64,7 +70,7 @@
         var popup = marker3.bindPopup('This is Richmond!').openPopup()
         popup.addTo(map);
 
-        //basemap controller
+        //basemaps
         var baseMaps = {
             "OSM":osm,
             "Carto": carto
@@ -73,9 +79,13 @@
             "Richmond City" : marker3 
         };
 
+        //basemap and layer controllers
         L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-
+        map.on('mousemove', function (e) {
+            document.getElementsByClassName('coordinate')[0].innerHTML = 'lat: ' + e.latlng.lat + 'lng: ' + e.latlng.lng;
+            console.log('lat: ' + e.latlng.lat + 'lng: ' + e.latlng.lng)
+        })
 
 
 
