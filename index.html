@@ -21,7 +21,7 @@
         .coordinate {
             position: absolute;
             bottom: 10px;
-            right: 50%
+            right: 60%
         }
     </style>
 
@@ -83,8 +83,8 @@
         L.control.layers(baseMaps, overlayMaps).addTo(map);
 
         map.on('mousemove', function (e) {
-            document.getElementsByClassName('coordinate')[0].innerHTML = 'lat: ' + e.latlng.lat + 'lng: ' + e.latlng.lng;
-            console.log('lat: ' + e.latlng.lat + 'lng: ' + e.latlng.lng)
+            document.getElementsByClassName('coordinate')[0].innerHTML = 'lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng;
+            console.log('lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng)
         })
 
 
