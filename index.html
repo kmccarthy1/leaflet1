@@ -36,7 +36,12 @@
 
 </html>
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-<script src = "data/polyline.js"></script>
+<!--bringing in infrastructure data-->
+<script src = "data/polyline.js" type="text/javascript" ></script>
+<!--bringing in Crash data-->
+<script src = "data/BikeCrash.js" type="text/javascript" ></script>
+<!--bringing in leaflet ajax-->
+<script src="../external/js/leaflet.ajax.min.js"></script> 
 
 <script>
     //map initialization
@@ -53,12 +58,7 @@
         tap: false
     });
 
-    var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
-        });
-        carto.addTo(map);
+ 
 
 
     //splashscreen popup
@@ -67,7 +67,7 @@
         autoClose: true,
     })
     .setLatLng(map.getCenter())
-    .setContent('<p> Welcome to Richmond"s Bike Infrastructure Viewer! </p><p>Click a segment to get more info</p>')
+    .setContent("<p> Welcome to Richmond's Bike Infrastructure Viewer! </p><p>Click a segment to get more info</p>")
     .openOn(map);
 
     map.once('popupclose', function(e){   
@@ -80,6 +80,7 @@
         map.keyboard.enable();
         if (map.tap) map.tap.enable();
     });
+
     //create custom popup
     function customPopup(feature){
        return `<div> <h4 class="popupTitle"></b>${feature.properties.RouteName}</h4> 
@@ -98,15 +99,20 @@
         });
         //osm.addTo(map);
 
-
-        var dark = L.tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
-            attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            minZoom: 0,
-            maxZoom: 22,
-            subdomains: 'abcd',
-            accessToken: '<your accessToken>'
+        var dark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+            maxZoom: 20,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
         });
-        //dark.addTo(map);
+        dark.addTo(map);
+
+        var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+        });
+        //carto.addTo(map);
+
+       
 
         // var cycleMap = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}{r}', {
         // });
@@ -117,7 +123,7 @@
             iconUrl: 'img/bike.png',
             iconSize: [45,45],
         });
-        
+
         //custom bike icon and marker added
         var marker3 = L.marker([37.536, -77.42], {icon: myIcon});
         var popup = marker3.bindPopup('This is Richmond!').openPopup()
@@ -125,12 +131,13 @@
 
         //basemaps
         var baseMaps = {
-            "OSM":osm,
-            "Carto": carto 
+            "Dark View":dark,
+            "Light View": carto 
             //"Cycle Map": cycleMap
         };
         var overlayMaps = {
-            "Richmond City" : marker3 
+            "Richmond City" : marker3
+            //"Bike Crash Data" : bikeCrash
         };
 
         //basemap and layer controllers
@@ -141,14 +148,23 @@
             console.log('lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng)
         })
 
-        //LOADING GEOJSON DATA
+        //LOADING BIKE INFRASTRUCTURE GEOJSON DATA
         L.geoJSON(BikeDataJSON, {
             onEachFeature:function(feature, layer) {
                 layer.bindPopup(customPopup(feature))
                // layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
+            },
+            style: function(){
+                return { color: 'orange' }
             }
         }).addTo(map);
 
+        //LOADING BIKE CRASH DATA
+       // L.geoJSON(pointJSON).addTo(map);
+
+        //Trying to add bike data as geojson not js
+       var bikeGeoJson = new L.GeoJSON.AJAX("BikeCrash.geojson");
+       bikeGeoJson.addTo(map);
 
 
     </script>
