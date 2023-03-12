@@ -21,7 +21,7 @@
         .coordinate {
             position: absolute;
             bottom: 10px;
-            right: 60%
+            left: 1%
         }
     </style>
 
@@ -35,10 +35,55 @@
 
 </html>
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+<script src = "data/polyline.js"></script>
 
 <script>
     //map initialization
-    var map = L.map('map').setView([37.540, -77.43], 14);
+    var map = L.map('map', {
+        center: [37.540, -77.43],
+        zoom: 14,     
+        zoomControl: false,
+        dragging: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false
+    });
+
+    var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+        });
+        carto.addTo(map);
+
+
+    //splashscreen popup
+    var popup = L.popup ({
+        closeButton: true,
+        autoClose: true,
+    })
+    .setLatLng(map.getCenter())
+    .setContent('<p> Splashscreen </p>')
+    .openOn(map);
+
+    map.once('popupclose', function(e){   
+        L.control.zoom().addTo(map);
+        map.dragging.enable();
+        map.touchZoom.enable();
+        map.doubleClickZoom.enable();
+        map.scrollWheelZoom.enable();
+        map.boxZoom.enable();
+        map.keyboard.enable();
+        if (map.tap) map.tap.enable();
+    });
+
+
+
+
+
     //adding osm layer
     var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -46,12 +91,6 @@
         });
         //osm.addTo(map);
 
-        var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
-        });
-        carto.addTo(map);
 
         var dark = L.tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
             attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -61,6 +100,12 @@
             accessToken: '<your accessToken>'
         });
         //dark.addTo(map);
+
+        // var cycleMap = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}{r}', {
+        // });
+        // cycleMap.addTo(map);
+
+
         var myIcon = L.icon ({
             iconUrl: 'img/bike.png',
             iconSize: [45,45],
@@ -73,7 +118,8 @@
         //basemaps
         var baseMaps = {
             "OSM":osm,
-            "Carto": carto
+            "Carto": carto 
+            //"Cycle Map": cycleMap
         };
         var overlayMaps = {
             "Richmond City" : marker3 
@@ -86,6 +132,13 @@
             document.getElementsByClassName('coordinate')[0].innerHTML = 'lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng;
             console.log('lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng)
         })
+
+        //LOADING GEOJSON DATA
+        L.geoJSON(BikeDataJSON, {
+            onEachFeature:function(feature, layer) {
+                layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
+            }
+        }).addTo(map);
 
 
 
