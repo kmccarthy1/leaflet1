@@ -7,7 +7,7 @@
     <title>Leaflet Time</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
-    <link rel="stylesheet" href="/leaflet1/style.css">
+    <link rel="stylesheet" href="/style.css">
 
     <style>
         body {
@@ -39,9 +39,11 @@
 <!--bringing in infrastructure data-->
 <script src = "data/polyline.js" type="text/javascript" ></script>
 <!--bringing in Crash data-->
-<script src = "data/BikeCrash.js"></script>
+<script src = "data/BikeCrash.geojson"></script>
+<script src = "data/USBikeRoutes.js"></script>
+
 <!--bringing in leaflet ajax-->
-<!-- <script src="../external/js/leaflet.ajax.min.js"></script>  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
 
 <script>
     //map initialization
@@ -89,8 +91,19 @@
                </div>`;
     }
 
+    //adding legend
+    var legend = L.control({ position: "bottomright" });
 
+    legend.onAdd = function(map) {
+        var legendContent = L.DomUtil.create("div", "legend");
+        legendContent.innerHTML += "<h4>Map Key</h4>";
+        legendContent.innerHTML += '<i style="background: orange"></i><span>Local Infrastructure</span><br>';
+        legendContent.innerHTML += '<i style="background: red"></i><span>US Bike Routes</span><br>';
+        legendContent.innerHTML += '<i style="background: #E6E696"></i><span>Land</span><br>';
 
+        return legendContent;
+    }
+    legend.addTo(map);
 
     //adding osm layer
     var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -147,11 +160,24 @@
             console.log('lat: ' + e.latlng.lat + ' lng: ' + e.latlng.lng)
         })
 
+        //LOADING us bike routes
+        L.geoJSON(USBikeRoutes, {
+            onEachFeature:function(feature, layer) {
+                layer.bindPopup(customPopup(feature))
+            //    layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
+            },
+            style: function(){
+                return { color: 'red' }
+            }
+        }).addTo(map);
+
+
+
         //LOADING BIKE INFRASTRUCTURE GEOJSON DATA
         L.geoJSON(BikeDataJSON, {
             onEachFeature:function(feature, layer) {
                 layer.bindPopup(customPopup(feature))
-               // layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
+            //    layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
             },
             style: function(){
                 return { color: 'orange' }
@@ -159,8 +185,8 @@
         }).addTo(map);
 
         // LOADING BIKE CRASH DATA
-       L.geoJSON(pointJSON).addTo(map);
-
+       var BikeCrash = new L.geoJson.ajax("data/BikeCrash.geojson");
+       BikeCrash.addTo(map);
         //Trying to add bike data as geojson not js
     //    var bikeGeoJson = new L.GeoJSON.AJAX("BikeCrash.geojson");
     //    bikeGeoJson.addTo(map);
