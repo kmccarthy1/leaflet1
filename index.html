@@ -162,15 +162,15 @@
         })
 
         //LOADING us bike routes
-        L.geoJSON(USBikeRoutes, {
-            onEachFeature:function(feature, layer) {
-                layer.bindPopup(customPopup(feature))
-            //    layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
-            },
-            style: function(){
-                return { color: 'red' }
-            }
-        }).addTo(map);
+        // L.geoJSON(USBikeRoutes, {
+        //     onEachFeature:function(feature, layer) {
+        //         layer.bindPopup(customPopup(feature))
+        //     //    layer.bindPopup(`<b>Route Name: </b>` + feature.properties.RouteName + " " + `<br><b>Route Type: </b>` + feature.properties.Type + '<br><b> Route Subtype: </b>' + feature.properties.SubType)
+        //     },
+        //     style: function(){
+        //         return { color: 'red' }
+        //     }
+        // }).addTo(map);
 
 
 
