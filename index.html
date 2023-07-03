@@ -69,7 +69,7 @@
         autoClose: true,
     })
     .setLatLng(map.getCenter())
-    .setContent("<p> Welcome to Richmond's Bike Infrastructure Viewer! </p><p>Click a segment to get more info</p>")
+    .setContent("<p> Welcome to Richmond's Bike Infrastructure Viewer! </p><p></p> <p>Click a segment to get more info</p>")
     .openOn(map);
 
     map.once('popupclose', function(e){   
@@ -99,7 +99,7 @@
         legendContent.innerHTML += "<h4>Map Key</h4>";
         legendContent.innerHTML += '<i style="background: orange"></i><span>Local Infrastructure</span><br>';
         legendContent.innerHTML += '<i style="background: red"></i><span>US Bike Routes</span><br>';
-        legendContent.innerHTML += '<i style="background: #E6E696"></i><span>Land</span><br>';
+        // legendContent.innerHTML += '<i style="background: #E6E696"></i><span>Land</span><br>';
 
         return legendContent;
     }
